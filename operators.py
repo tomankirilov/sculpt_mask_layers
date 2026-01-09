@@ -263,6 +263,8 @@ class SCULPTMASK_OT_preview_toggle(Operator):
         if idx < 0 or idx >= len(obj.sculpt_mask_layers):
             return {'CANCELLED'}
 
+        obj.sculpt_mask_layers_index = idx
+
         mesh = obj.data
         item = obj.sculpt_mask_layers[idx]
 
