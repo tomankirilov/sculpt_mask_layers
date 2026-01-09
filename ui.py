@@ -30,10 +30,14 @@ def draw_mask_layers(layout, context):
 
     layout.separator()
 
-    # Main action row. I prefer putting these together so the user sees both.
-    row = layout.row(align=True)
-    row.operator("sculptmask.assign", text="Assign to selected layer", icon='EXPORT')
-    row.operator("sculptmask.new_layer_from_mask", text="New layer from mask", icon='MOD_MASK')
+    # Main action block. I prefer keeping these together so the user sees them.
+    col = layout.column(align=True)
+    col.operator("sculptmask.assign", text="Assign to selected layer", icon='EXPORT')
+    col.operator("sculptmask.new_layer_from_mask", text="New layer from mask", icon='MOD_MASK')
+    col.operator("sculptmask.duplicate_layer", text="Duplicate selected layer", icon='DUPLICATE')
+
+    layout.separator()
+    layout.label(text="Mask Operators")
 
     row = layout.row(align=True)
     row.operator("sculptmask.mask_invert", text="Invert", icon='ARROW_LEFTRIGHT')
@@ -49,6 +53,12 @@ def draw_mask_layers(layout, context):
     op.filter_type = 'GROW'
     op = row.operator("sculptmask.mask_filter", text="Shrink", icon='REMOVE')
     op.filter_type = 'SHRINK'
+
+    row = layout.row(align=True)
+    op = row.operator("sculptmask.mask_filter", text="Increase Contrast", icon='ADD')
+    op.filter_type = 'CONTRAST_INCREASE'
+    op = row.operator("sculptmask.mask_filter", text="Decrease Contrast", icon='REMOVE')
+    op.filter_type = 'CONTRAST_DECREASE'
 
 
 class SCULPTMASK_UL_layers(UIList):
