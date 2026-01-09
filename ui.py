@@ -39,23 +39,25 @@ def draw_mask_layers(layout, context):
     layout.separator()
     layout.label(text="Mask Operators")
 
-    row = layout.row(align=True)
+    col = layout.column(align=True)
+
+    row = col.row(align=True)
     row.operator("sculptmask.mask_invert", text="Invert", icon='ARROW_LEFTRIGHT')
     row.operator("sculptmask.mask_clear", text="Clear", icon='X')
 
-    row = layout.row(align=True)
+    row = col.row(align=True)
     op = row.operator("sculptmask.mask_filter", text="Smooth", icon='MOD_SMOOTH')
     op.filter_type = 'SMOOTH'
     op = row.operator("sculptmask.mask_filter", text="Sharpen", icon='SHARPCURVE')
     op.filter_type = 'SHARPEN'
 
-    row = layout.row(align=True)
+    row = col.row(align=True)
     op = row.operator("sculptmask.mask_filter", text="Grow", icon='ADD')
     op.filter_type = 'GROW'
     op = row.operator("sculptmask.mask_filter", text="Shrink", icon='REMOVE')
     op.filter_type = 'SHRINK'
 
-    row = layout.row(align=True)
+    row = col.row(align=True)
     op = row.operator("sculptmask.mask_filter", text="Increase Contrast", icon='ADD')
     op.filter_type = 'CONTRAST_INCREASE'
     op = row.operator("sculptmask.mask_filter", text="Decrease Contrast", icon='REMOVE')
