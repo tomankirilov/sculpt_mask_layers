@@ -41,6 +41,7 @@ def draw_mask_layers(layout, context):
 
     row = layout.row(align=True)
     row.operator("sculptmask.mask_invert", text="Invert", icon='ARROW_LEFTRIGHT')
+    row.operator("sculptmask.mask_clear", text="Clear", icon='X')
 
     row = layout.row(align=True)
     op = row.operator("sculptmask.mask_filter", text="Smooth", icon='MOD_SMOOTH')

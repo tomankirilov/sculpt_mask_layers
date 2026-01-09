@@ -387,6 +387,35 @@ class SCULPTMASK_OT_mask_invert(Operator):
         return {'FINISHED'}
 
 
+class SCULPTMASK_OT_mask_clear(Operator):
+    bl_idname = "sculptmask.mask_clear"
+    bl_label = "Clear"
+    bl_description = "Clear the current sculpt mask"
+    bl_options = {'REGISTER'}
+
+    @classmethod
+    def poll(cls, context):
+        return active_mesh_object(context) is not None and context.mode == 'SCULPT'
+
+    def execute(self, context):
+        obj = active_mesh_object(context)
+        if not obj:
+            self.report({'ERROR'}, "Select a mesh object.")
+            return {'CANCELLED'}
+        if context.mode != 'SCULPT':
+            self.report({'ERROR'}, "Switch to Sculpt mode.")
+            return {'CANCELLED'}
+        mesh = obj.data
+        attr = get_or_create_sculpt_mask_attr(mesh)
+        n = len(attr.data)
+        if n == 0:
+            return {'CANCELLED'}
+        zeros = [0.0] * n
+        attr.data.foreach_set("value", zeros)
+        mesh.update()
+        return {'FINISHED'}
+
+
 class SCULPTMASK_OT_mask_filter(Operator):
     bl_idname = "sculptmask.mask_filter"
     bl_label = "Mask Filter"
@@ -452,6 +481,7 @@ CLASSES = (
     SCULPTMASK_OT_preview_toggle,
     SCULPTMASK_OT_duplicate_layer,
     SCULPTMASK_OT_mask_invert,
+    SCULPTMASK_OT_mask_clear,
     SCULPTMASK_OT_mask_filter,
     SCULPTMASK_OT_new_layer_from_mask,
 )
