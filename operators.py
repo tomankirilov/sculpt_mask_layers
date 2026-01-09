@@ -307,6 +307,48 @@ class SCULPTMASK_OT_preview_toggle(Operator):
         return {'FINISHED'}
 
 
+class SCULPTMASK_OT_duplicate_layer(Operator):
+    bl_idname = "sculptmask.duplicate_layer"
+    bl_label = "Duplicate Selected Layer"
+    bl_description = "Duplicate the selected layer and append _duplicate to its name"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        obj = active_mesh_object(context)
+        if not obj:
+            self.report({'ERROR'}, "Select a mesh object.")
+            return {'CANCELLED'}
+
+        idx = obj.sculpt_mask_layers_index
+        if idx < 0 or idx >= len(obj.sculpt_mask_layers):
+            self.report({'ERROR'}, "No layer selected.")
+            return {'CANCELLED'}
+
+        src_item = obj.sculpt_mask_layers[idx]
+        if not src_item.attr_name or src_item.attr_name not in obj.data.attributes:
+            self.report({'ERROR'}, "Selected layer has no stored mask to duplicate.")
+            return {'CANCELLED'}
+
+        item = obj.sculpt_mask_layers.add()
+        item.name = f"{src_item.name}_duplicate"
+
+        try:
+            ensure_layer_attr_for_item(obj, item)
+            src = obj.data.attributes[src_item.attr_name]
+            dst = obj.data.attributes[item.attr_name]
+            status = copy_attr_values(src, dst, len(obj.data.vertices), allow_mismatch=True)
+            if status == "MISMATCH":
+                self.report({'WARNING'}, "Topology mismatch: duplicated with best effort (extra verts set to 0).")
+        except Exception as e:
+            self.report({'ERROR'}, str(e))
+            obj.sculpt_mask_layers.remove(len(obj.sculpt_mask_layers) - 1)
+            return {'CANCELLED'}
+
+        obj.sculpt_mask_layers_index = len(obj.sculpt_mask_layers) - 1
+        obj.data.update()
+        return {'FINISHED'}
+
+
 class SCULPTMASK_OT_mask_invert(Operator):
     bl_idname = "sculptmask.mask_invert"
     bl_label = "Invert"
@@ -408,6 +450,7 @@ CLASSES = (
     SCULPTMASK_OT_assign,
     SCULPTMASK_OT_assign_overwrite,
     SCULPTMASK_OT_preview_toggle,
+    SCULPTMASK_OT_duplicate_layer,
     SCULPTMASK_OT_mask_invert,
     SCULPTMASK_OT_mask_filter,
     SCULPTMASK_OT_new_layer_from_mask,
