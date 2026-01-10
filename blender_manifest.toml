@@ -1,0 +1,14 @@
+schema_version = "1.0.0"
+
+id = "sculpt_mask_layers"
+version = "1.2.1"
+name = "Sculpt Mask Layers"
+tagline = "Store and recall sculpt masks as layers"
+maintainer = "tomanov"
+type = "add-on"
+
+tags = ["Sculpt", "Workflow"]
+
+blender_version_min = "4.2.0"
+
+license = ["SPDX:GPL-3.0-or-later"]

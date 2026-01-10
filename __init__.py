@@ -1,13 +1,3 @@
-bl_info = {
-    "name": "Sculpt Mask Layers",
-    "author": "tomanov",
-    "version": (1, 2, 1),
-    "blender": (5, 0, 0),
-    "location": "Sculpt Mode > Mask menu",
-    "description": "Sculpt mask layer system. Kind of working.",
-    "category": "Sculpt",
-}
-
 import bpy
 from bpy.props import CollectionProperty, IntProperty
 
