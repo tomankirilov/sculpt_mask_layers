@@ -109,6 +109,10 @@ class SculptMaskLayersPreferences(AddonPreferences):
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "show_n_panel")
+        layout.separator()
+        row = layout.row(align=True)
+        row.operator("wm.url_open", text="GitHub").url = "https://github.com/tomankirilov/"
+        row.operator("wm.url_open", text="Tomanov Art").url = "https://tomanov.art/"
 
 
 class SCULPTMASK_PT_panel(Panel):
