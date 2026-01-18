@@ -430,6 +430,21 @@ class SCULPTMASK_OT_mask_filter(Operator):
     def poll(cls, context):
         return active_mesh_object(context) is not None and context.mode == 'SCULPT'
 
+    def invoke(self, context, event):
+        obj = active_mesh_object(context)
+        if not obj:
+            self.report({'ERROR'}, "Select a mesh object.")
+            return {'CANCELLED'}
+        if context.mode != 'SCULPT':
+            self.report({'ERROR'}, "Switch to Sculpt mode.")
+            return {'CANCELLED'}
+        # Invoke the built-in operator so the Adjust Last Operation panel appears.
+        return bpy.ops.sculpt.mask_filter(
+            'INVOKE_DEFAULT',
+            filter_type=self.filter_type,
+            auto_iteration_count=False,
+        )
+
     def execute(self, context):
         obj = active_mesh_object(context)
         if not obj:
@@ -439,8 +454,11 @@ class SCULPTMASK_OT_mask_filter(Operator):
             self.report({'ERROR'}, "Switch to Sculpt mode.")
             return {'CANCELLED'}
         # I left this as the Blender operator because it works and handles all modes.
-        bpy.ops.sculpt.mask_filter(filter_type=self.filter_type)
-        return {'FINISHED'}
+        return bpy.ops.sculpt.mask_filter(
+            'EXEC_DEFAULT',
+            filter_type=self.filter_type,
+            auto_iteration_count=False,
+        )
 
 
 class SCULPTMASK_OT_new_layer_from_mask(Operator):
