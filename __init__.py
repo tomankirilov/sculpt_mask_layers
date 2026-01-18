@@ -16,6 +16,7 @@ def register():
     bpy.types.Object.sculpt_mask_layers_index = IntProperty(default=0)
 
     ui.append_menu_hooks()
+    ui.sync_panel_name()
 
     # Simple log, helpful when Blender silently fails to load add-ons.
     print("[Sculpt Mask Layers] registered v1.2.1")

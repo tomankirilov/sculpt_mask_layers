@@ -1,10 +1,43 @@
 import bpy
 from bpy.types import AddonPreferences, Operator, Panel, UIList
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty, StringProperty
 
 from .utils import active_mesh_object
 
 ADDON_ID = __package__ if __package__ else "sculpt_mask_layers"
+DEFAULT_PANEL_NAME = "Mask Layers"
+
+
+def _sanitize_panel_name(value):
+    name = (value or "").strip()
+    return name if name else DEFAULT_PANEL_NAME
+
+
+def _apply_panel_name(name):
+    panel = SCULPTMASK_PT_panel
+    if panel.bl_label == DEFAULT_PANEL_NAME and panel.bl_category == name:
+        return
+    try:
+        bpy.utils.unregister_class(panel)
+    except Exception:
+        pass
+    panel.bl_label = DEFAULT_PANEL_NAME
+    panel.bl_category = name
+    try:
+        bpy.utils.register_class(panel)
+    except Exception:
+        pass
+
+
+def _panel_name_update(self, context):
+    _apply_panel_name(_sanitize_panel_name(self.panel_name))
+
+
+def sync_panel_name():
+    addon = bpy.context.preferences.addons.get(ADDON_ID)
+    if not addon:
+        return
+    _apply_panel_name(_sanitize_panel_name(addon.preferences.panel_name))
 
 def draw_mask_layers(layout, context):
     # Keeping this in one function so popup + sidebar stay in sync.
@@ -105,10 +138,17 @@ class SculptMaskLayersPreferences(AddonPreferences):
         description="Display the Mask Layers UI in the 3D View N panel (Sculpt mode only)",
         default=False,
     )
+    panel_name: StringProperty(
+        name="Panel Name",
+        description="Name for the Sculpt Mask Layers panel tab",
+        default=DEFAULT_PANEL_NAME,
+        update=_panel_name_update,
+    )
 
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "show_n_panel")
+        layout.prop(self, "panel_name")
         layout.separator()
         row = layout.row(align=True)
         row.operator("wm.url_open", text="GitHub").url = "https://github.com/tomankirilov/"
@@ -116,11 +156,11 @@ class SculptMaskLayersPreferences(AddonPreferences):
 
 
 class SCULPTMASK_PT_panel(Panel):
-    bl_label = "Mask Layers"
+    bl_label = DEFAULT_PANEL_NAME
     bl_idname = "SCULPTMASK_PT_panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = "Mask Layers"
+    bl_category = DEFAULT_PANEL_NAME
     @classmethod
     def poll(cls, context):
         if context.mode != 'SCULPT':
@@ -160,4 +200,3 @@ CLASSES = (
     SCULPTMASK_OT_popup,
     SCULPTMASK_PT_panel,
 )
-
